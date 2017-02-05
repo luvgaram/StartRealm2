@@ -10,31 +10,85 @@ import UIKit
 import RealmSwift
 
 class ViewController: UIViewController {
-
+    @IBOutlet weak var textView: UITextField!
+    @IBOutlet weak var tableView: UITableView!
+    
+    var diaries: Results<Diary>!
+    var picturesArray = NSMutableArray()
     override func viewDidLoad() {
         super.viewDidLoad()
-//        addDiary()
-        readDiary()
     }
     
-    func addDiary() {
-        // 기본 Realm을 가져옵니다.
-        let realm = try! Realm()
+    @IBAction func picOneButton(_ sender: Any) {
+        picturesArray.add("01.jpg")
+    }
+
+    @IBAction func picTwoButton(_ sender: Any) {
+        picturesArray.add("02.jpg")
+    }
+
+    @IBAction func picThreeButton(_ sender: Any) {
+        picturesArray.add("03.jpg")
+    }
+    
+    @IBAction func picFourButton(_ sender: Any) {
+        picturesArray.add("04.jpg")
+    }
+    
+    @IBAction func picFiveButton(_ sender: Any) {
+        picturesArray.add("05.jpg")
+    }
+
+    @IBAction func picSixButton(_ sender: Any) {
+        picturesArray.add("06.jpg")
+    }
+    
+    @IBAction func picSevenButton(_ sender: Any) {
+        picturesArray.add("07.jpg")
+    }
+    
+    @IBAction func picEightButton(_ sender: Any) {
+        picturesArray.add("08.jpg")
+    }
+    
+    @IBAction func picNineButton(_ sender: Any) {
+        picturesArray.add("09.jpg")
+    }
+    
+    @IBAction func picTenButton(_ sender: Any) {
+        picturesArray.add("10.jpg")
+    }
+    
+    @IBAction func saveButton(_ sender: Any) {
+        // picturesArray 대로 Picture 객체를 만들고 프로퍼티 값을 넣습니다.
         
-        // Picture 객체를 만들고 값을 넣습니다.
-        let testPicture1 = Picture(value:["01.jpg"])
-        let testPicture2 = Picture(value:["02.jpg"])
-        
-        // Diary 객체를 만들고 값을 넣습니다.
-        let myDiary = Diary(value: [incrementID(), Date(), "안녕하세요?", [testPicture1, testPicture2]]);
-        
-        // 트랜잭션 안에서 Realm에 Diary 객체를 추가합니다.
-        try! realm.write {
-            realm.add(myDiary)
+        let photos = List<Picture>()
+        for fileName in picturesArray {
+            let picture = Picture()
+            picture.url = fileName as! String
+            photos.append(picture)
         }
         
-        // Realm 경로를 찾습니다.
-        print(Realm.Configuration.defaultConfiguration.fileURL!)
+        // Diary 객체를 만들고 사용자가 입력한 프로퍼티 값을 넣습니다.
+        let myDiary = Diary(value: [incrementID(), Date(), textView.text ?? "", photos]);
+        
+        // Realm에 Diary 객체를 저장합니다.
+        addDiary(diary: myDiary)
+        
+        // 사용자 입력 정보를 초기화합니다.
+        textView.text = ""
+        picturesArray = NSMutableArray()
+        self.tableView.reloadData()
+    }
+
+    func addDiary(diary: Diary) {
+        // 기본 Realm을 가져옵니다.
+        let realm = try! Realm()
+    
+        // 트랜잭션 안에서 Realm에 Diary 객체를 추가합니다.
+        try! realm.write {
+            realm.add(diary)
+        }
     }
     
     func readDiary() {
