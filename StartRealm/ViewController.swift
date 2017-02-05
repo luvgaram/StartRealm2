@@ -9,7 +9,7 @@
 import UIKit
 import RealmSwift
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet weak var textView: UITextField!
     @IBOutlet weak var tableView: UITableView!
     
@@ -17,6 +17,29 @@ class ViewController: UIViewController {
     var picturesArray = NSMutableArray()
     override func viewDidLoad() {
         super.viewDidLoad()
+        readDiary()
+        self.tableView.delegate = self
+        self.tableView.dataSource = self
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        print(diaries.count)
+        return diaries.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = UITableViewCell(style: UITableViewCellStyle.default, reuseIdentifier: "tableCell")
+        cell.textLabel?.text = diaries[indexPath.row].text
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        print(indexPath.row)
+        print(diaries[indexPath.row])
+        
+        let detailViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "DetailViewController") as! DetailViewController
+        detailViewController.myDiary = diaries[indexPath.row]
+        self.present(detailViewController, animated: true)
     }
     
     @IBAction func picOneButton(_ sender: Any) {
@@ -95,14 +118,8 @@ class ViewController: UIViewController {
         // 기본 Realm을 가져옵니다.
         let realm = try! Realm()
         
-        // 모든 Diary 데이터를 읽습니다. 반환값: Result
-        let diaries = realm.objects(Diary.self)
-        
-        //결과값에 들어있는 각 객체를 읽고 텍스트를 출력합니다.
-        for diary in diaries {
-            let text = diary.text
-            print(text)
-        }
+        // 모든 Diary 데이터를 읽어 옵니다.
+        diaries = realm.objects(Diary.self)
     }
     
     // ID 값을 증가시킵니다.
